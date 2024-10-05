@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Service for the Ruby on Rails web application
+  web:
+    build: .  # Build the service's image from the current directory
+    ports:
+      - "3000:3000"  # Expose ports for accessing the application
+    working_dir: /var/www
+    volumes:
+       - ./:/var/www
+    depends_on:
+      - db  # Specify dependency on the database service
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/rails_7_with_docker  # Database connection parameters
+
+  # Service for the PostgreSQL database
+  db:
+    image: postgres:13  # Use the official PostgreSQL version 13 image
+    ports:
+      - "5432:5432"  # Expose port for accessing the database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Create a volume for storing database data
+    environment:
+      POSTGRES_USER: postgres  
+      POSTGRES_PASSWORD: postgres  
+  
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1080:1080"  # for web interface
+      - "1025:1025"  # for SMTP
+
+# Define a volume for storing PostgreSQL data
+volumes:
+  postgres_data:
